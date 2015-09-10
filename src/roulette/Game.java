@@ -15,6 +15,9 @@ public class Game {
     private Bet[] myPossibleBets = { 
         new BlackRedBet(),
         new EvenOddBet(),
+        new HighLowBet(),
+        new SingleNumberBet(),
+        new TwoConsecutiveBet(),
         new ThreeConsecutiveBet()
     };
     private Wheel myWheel;
@@ -44,15 +47,15 @@ public class Game {
     public void play (Gambler player) {
         int amount = ConsoleReader.promptRange("How much do you want to bet",
                                                0, player.getBankroll());
-        int whichBet = promptForBet();
-        String betChoice = placeBet(whichBet);
+        Bet currentBet = myPossibleBets[promptForBet()];
+        String betChoice = placeBet(currentBet);
 
         System.out.print("Spinning ...");
         myWheel.spin();
         System.out.println(String.format("Dropped into %s %d", myWheel.getColor(), myWheel.getNumber()));
-        if (betIsMade(whichBet, betChoice)) {
+        if (betIsMade(currentBet, betChoice)) {
             System.out.println("*** Congratulations :) You win ***");
-            amount *= myPossibleBets[whichBet].getOdds();
+            amount *= currentBet.getOdds();
         }
         else {
             System.out.println("*** Sorry :( You lose ***");
@@ -77,8 +80,8 @@ public class Game {
      *
      * @param whichBet specific bet chosen by the user
      */
-    private String placeBet (int whichBet) {
-        String result = myPossibleBets[whichBet].prompt();
+    private String placeBet (Bet bet) {
+        String result = bet.prompt();
         System.out.println();
         return result;
     }
@@ -89,7 +92,7 @@ public class Game {
      * @param whichBet specific bet chosen by the user
      * @param betChoice specific value user chose to try to win the bet
      */
-    private boolean betIsMade (int whichBet, String betChoice) {
-        return myPossibleBets[whichBet].checkWinOrLose(myWheel, betChoice);
+    private boolean betIsMade (Bet bet, String betChoice) {
+        return bet.checkWinOrLose(myWheel, betChoice);
     }
 }
